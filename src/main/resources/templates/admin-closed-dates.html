@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Closed Dates and Salon Status</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<section class="admin-layout">
+
+    <aside class="sidebar">
+        <h2>Admin Panel</h2>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/bookings}">Bookings</a>
+        <a th:href="@{/admin/packages}">Packages</a>
+        <a th:href="@{/admin/reviews}">Reviews</a>
+        <a th:href="@{/admin/closed-dates}">Closed Dates</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" style="background:none; border:none; color:inherit; cursor:pointer; font:inherit; padding:0; text-decoration:underline;">Logout</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <h1>Salon Status and Closed Dates</h1>
+
+        <div class="alert success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+        <div class="status-card">
+            <span>Current Salon Status</span>
+            <strong th:text="${salonState}">OPEN</strong>
+        </div>
+
+        <form class="inline-form" method="post" th:action="@{/admin/salon-state}">
+            <select name="state">
+                <option value="OPEN">OPEN</option>
+                <option value="CLOSED">CLOSED</option>
+            </select>
+            <button class="btn-small" type="submit">Update Status</button>
+        </form>
+
+        <form class="booking-form compact-form" method="post" th:action="@{/admin/closed-dates/add}">
+            <input type="date" name="closedDate" required>
+            <input type="text" name="reason" placeholder="Reason (optional)">
+            <button class="btn-primary" type="submit">Add Closed Date</button>
+        </form>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Reason</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="closedDate : ${closedDates}">
+                    <td th:text="${closedDate.closedDate}">Date</td>
+                    <td th:text="${closedDate.reason}">Reason</td>
+                    <td>
+                        <form th:action="@{'/admin/closed-dates/' + ${closedDate.id} + '/delete'}" method="post">
+                            <button class="btn-small danger" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(closedDates)}">
+                    <td colspan="3">No closed dates added yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</section>
+</body>
+</html>

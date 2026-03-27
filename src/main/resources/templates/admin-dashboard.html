@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<section class="admin-layout">
+
+    <aside class="sidebar">
+        <h2>Admin Panel</h2>
+        <a th:href="@{/admin/dashboard}">Dashboard</a>
+        <a th:href="@{/admin/bookings}">Bookings</a>
+        <a th:href="@{/admin/packages}">Packages</a>
+        <a th:href="@{/admin/reviews}">Reviews</a>
+        <a th:href="@{/admin/closed-dates}">Closed Dates</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" style="background:none; border:none; color:inherit; cursor:pointer; font:inherit; padding:0; text-decoration:underline;">Logout</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <h1>Dashboard</h1>
+
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <span>Pending Bookings</span>
+                <strong th:text="${pendingCount}">0</strong>
+            </div>
+            <div class="dash-card">
+                <span>Salon Status</span>
+                <strong th:text="${salonState}">OPEN</strong>
+            </div>
+        </div>
+
+        <h3 class="admin-title">Recent Bookings</h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Package</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="booking : ${allBookings}">
+                    <td th:text="${booking.fullName}">Name</td>
+                    <td th:text="${booking.bookingDate}">Date</td>
+                    <td th:text="${booking.startTime + ' - ' + booking.endTime}">Time</td>
+                    <td th:text="${booking.packageItem.name}">Package</td>
+                    <td th:text="${booking.status}">Status</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(allBookings)}">
+                    <td colspan="5">No bookings available.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</section>
+</body>
+</html>

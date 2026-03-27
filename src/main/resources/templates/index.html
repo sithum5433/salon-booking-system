@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${salonName}">KATHURA</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: navbar}"></div>
+
+<header class="hero">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <span class="hero-tag">Premium Grooming Experience</span>
+            <h1>Professional Haircuts, Beard Styling, and Smart Online Booking</h1>
+            <p>
+                Book your appointment easily, choose your package, and enjoy a modern salon experience
+                with a clean and elegant interface.
+            </p>
+
+            <div class="hero-badges">
+                <div class="status-box">
+                    <span>Salon Status</span>
+                    <strong th:text="${salonState}">OPEN</strong>
+                </div>
+                <div class="clock-box">
+                    <span>Current Time</span>
+                    <strong id="digitalClock">--</strong>
+                </div>
+                <div class="clock-box">
+                    <span>Closing Countdown</span>
+                    <strong id="closeCountdown">--</strong>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <a class="btn-primary" th:href="@{/booking}">Book Appointment</a>
+                <a class="btn-secondary" th:href="@{/reviews}">Read Reviews</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section">
+    <div class="section-title">
+        <h2>Our Packages</h2>
+        <p>Choose a professional package and reserve your preferred time slot.</p>
+    </div>
+
+    <div class="card-grid">
+        <div class="service-card" th:each="pkg : ${packages}">
+            <img th:src="@{${pkg.imageUrl}}" alt="Service Image">
+            <div class="service-content">
+                <h3 th:text="${pkg.name}">Hair Cut</h3>
+                <p th:text="${pkg.description}">Description</p>
+                <div class="price">Rs. <span th:text="${pkg.price}">0.00</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section alt-section">
+    <div class="section-title">
+        <h2>Why Customers Choose Us</h2>
+    </div>
+    <div class="feature-grid">
+        <div class="feature-card">Easy booking with date, time, duration, and package selection</div>
+        <div class="feature-card">No double-booking with overlap protection</div>
+        <div class="feature-card">Professional haircut and beard styling experience</div>
+        <div class="feature-card">Modern design, clear navigation, and customer-friendly interface</div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-title">
+        <h2>Shop Details</h2>
+        <p>Beautiful grooming space for haircuts, beard cuts, and stylish finishing.</p>
+    </div>
+
+    <div class="shop-grid">
+        <img th:src="@{/img/shop.jpg}" alt="Salon Shop">
+        <div class="shop-info">
+            <h3>KATHURA</h3>
+            <p>Open hours: 9:00 AM to 8:00 PM</p>
+            <p>Services: Haircuts, Beard Cuts, Grooming Packages, Styling</p>
+            <p>Friendly service, easy online booking, and professional finishing for every customer.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-title">
+        <h2>Reviews</h2>
+
+    </div>
+
+    <div class="review-grid">
+        <div class="review-card" th:each="review : ${reviews}">
+            <h4 th:text="${review.customerName}">Customer</h4>
+            <div class="stars">
+                <span th:each="i : ${#numbers.sequence(1, review.stars)}">★</span>
+            </div>
+            <p th:text="${review.comment}">Review text</p>
+        </div>
+
+        <div class="review-card" th:if="${#lists.isEmpty(reviews)}">
+            <h4>No approved reviews yet</h4>
+            <p>Customer reviews will appear here after admin approval.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>KATHURA • Professional Haircuts • Beard Cuts • Smart Booking Website</p>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

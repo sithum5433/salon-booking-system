@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: navbar}"></div>
+
+<section class="form-page">
+    <div class="form-wrapper">
+        <div class="section-title left">
+            <h2>Book Your Appointment</h2>
+            <p>Select package, date, time, and duration. Only one customer can reserve a time slot.</p>
+        </div>
+
+        <div class="alert success" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <div class="alert error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <div class="status-box wide">
+            <span>Current Salon Status</span>
+            <strong th:text="${salonState}">OPEN</strong>
+        </div>
+
+        <form class="booking-form" th:action="@{/booking}" th:object="${bookingRequest}" method="post">
+            <div class="form-section">
+                <h4>1. Personal Information</h4>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" th:field="*{fullName}" placeholder="e.g. Jane Doe">
+                    <small class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" th:field="*{mobileNumber}" placeholder="e.g. 0712345678">
+                    <small class="field-error" th:if="${#fields.hasErrors('mobileNumber')}" th:errors="*{mobileNumber}"></small>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" th:field="*{email}" placeholder="e.g. jane@example.com">
+                    <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>2. Appointment Details</h4>
+                <div class="form-group">
+                    <label>Select Package</label>
+                    <select th:field="*{packageId}">
+                        <option value="">-- Choose a Service --</option>
+                        <option th:each="pkg : ${packages}" th:value="${pkg.id}"
+                                th:text="${pkg.name + ' - Rs. ' + pkg.price}">
+                        </option>
+                    </select>
+                    <small class="field-error" th:if="${#fields.hasErrors('packageId')}" th:errors="*{packageId}"></small>
+                </div>
+                <div class="form-group">
+                    <label>Booking Date</label>
+                    <input type="date" th:field="*{bookingDate}" id="bookingDateInput" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('bookingDate')}" th:errors="*{bookingDate}"></small>
+                </div>
+                <div class="form-group two-col">
+                    <div>
+                        <label>Start Time</label>
+                        <select th:field="*{startTime}">
+                            <option value="">-- Time --</option>
+                            <option value="09:00">09:00 AM</option>
+                            <option value="09:30">09:30 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="10:30">10:30 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="11:30">11:30 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="12:30">12:30 PM</option>
+                            <option value="13:00">01:00 PM</option>
+                            <option value="13:30">01:30 PM</option>
+                            <option value="14:00">02:00 PM</option>
+                            <option value="14:30">02:30 PM</option>
+                            <option value="15:00">03:00 PM</option>
+                            <option value="15:30">03:30 PM</option>
+                            <option value="16:00">04:00 PM</option>
+                            <option value="16:30">04:30 PM</option>
+                            <option value="17:00">05:00 PM</option>
+                            <option value="17:30">05:30 PM</option>
+                            <option value="18:00">06:00 PM</option>
+                            <option value="18:30">06:30 PM</option>
+                        </select>
+                        <small class="field-error" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></small>
+                    </div>
+                    <div>
+                        <label>Duration</label>
+                        <select th:field="*{durationType}">
+                            <option value="">-- Duration --</option>
+                            <option th:each="d : ${durations}" th:value="${d}" th:text="${d.label}"></option>
+                        </select>
+                        <small class="field-error" th:if="${#fields.hasErrors('durationType')}" th:errors="*{durationType}"></small>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary submit-btn" type="submit">Confirm Appointment</button>
+        </form>
+
+        <div class="info-panel">
+            <h3>Currently Reserved Timeslots</h3>
+            <p style="color:var(--muted); font-size:0.9rem; margin-bottom:12px;">Please do not book over these times as they are already taken.</p>
+            <div class="booked-slots">
+                <th:block th:each="b : ${existingBookings}">
+                    <span class="booked-slot" th:if="${b.status.name() == 'APPROVED' or b.status.name() == 'PENDING'}">
+                        <span th:text="${b.bookingDate + ' | ' + b.startTime + ' - ' + b.endTime}"></span>
+                    </span>
+                </th:block>
+            </div>
+            <div th:if="${#lists.isEmpty(existingBookings)}" style="margin-top:10px; color:var(--muted); font-size:0.9rem;">
+                No active reservations yet. Feel free to book any time today!
+            </div>
+        </div>
+        
+        <div class="info-panel" style="margin-top:20px;">
+            <h3>Closed Dates</h3>
+            <ul>
+                <li th:each="closedDate : ${closedDates}"
+                    th:text="${closedDate.closedDate + (closedDate.reason != null and !#strings.isEmpty(closedDate.reason) ? ' - ' + closedDate.reason : '')}">
+                </li>
+                <li th:if="${#lists.isEmpty(closedDates)}">No closed dates added yet.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<script th:inline="javascript">
+    const closedDates = [
+        /*[# th:each="cd : ${closedDates}"]*/
+        '[[${cd.closedDate}]]',
+        /*[/]*/
+    ];
+</script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

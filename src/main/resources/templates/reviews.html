@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments :: navbar}"></div>
+
+<section class="form-page">
+    <div class="form-wrapper">
+        <div class="section-title left">
+            <h2>Customer Reviews</h2>
+            <p>Customers can submit reviews and star ratings. Admin approves or deletes them.</p>
+        </div>
+
+        <div class="alert success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+        <form class="booking-form" th:action="@{/reviews}" th:object="${reviewRequest}" method="post">
+            <div>
+                <input type="text" th:field="*{customerName}" placeholder="Your Name">
+                <small class="field-error" th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></small>
+            </div>
+
+            <div>
+                <input type="email" th:field="*{email}" placeholder="Your Email">
+                <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </div>
+
+            <div>
+                <select th:field="*{stars}">
+                    <option value="0">Select Stars</option>
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                </select>
+                <small class="field-error" th:if="${#fields.hasErrors('stars')}" th:errors="*{stars}"></small>
+            </div>
+
+            <div>
+                <textarea th:field="*{comment}" rows="5" placeholder="Write your review"></textarea>
+                <small class="field-error" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></small>
+            </div>
+
+            <button class="btn-primary" type="submit">Submit Review</button>
+        </form>
+
+        <div class="review-grid">
+            <div class="review-card" th:each="review : ${reviews}">
+                <h4 th:text="${review.customerName}">Customer</h4>
+                <div class="stars">
+                    <span th:each="i : ${#numbers.sequence(1, review.stars)}">★</span>
+                </div>
+                <p th:text="${review.comment}">Review text</p>
+            </div>
+
+            <div class="review-card" th:if="${#lists.isEmpty(reviews)}">
+                <h4>No approved reviews yet</h4>
+                <p>Reviews will appear here after admin approval.</p>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
